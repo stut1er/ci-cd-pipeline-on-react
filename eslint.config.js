@@ -1,10 +1,10 @@
+// eslint.config.js
+import js from "@eslint/js";
 import globals from "globals";
 import react from "eslint-plugin-react";
 
 export default [
-    {
-        ignores: ["dist", "node_modules", "**/*.test.js", "**/*.spec.js"],
-    },
+    js.configs.recommended,
     {
         files: ["**/*.{js,jsx}"],
         plugins: {
@@ -14,7 +14,6 @@ export default [
             ecmaVersion: 2020,
             globals: {
                 ...globals.browser,
-                ...globals.node,
             },
             parserOptions: {
                 ecmaFeatures: {
@@ -23,15 +22,23 @@ export default [
             },
         },
         rules: {
-            "react/react-in-jsx-scope": "off",
-            "react/prop-types": "off",
-            "no-unused-vars": "warn",
-            "no-console": "warn",
+            "react/react-in-jsx-scope": "off", 
+            "react/prop-types": "off", 
+            "no-unused-vars": ["warn", { 
+                "varsIgnorePattern": "^_", 
+                "argsIgnorePattern": "^_"
+            }],
         },
         settings: {
             react: {
                 version: "detect",
             },
+        },
+    },
+    {
+        files: ["src/main.jsx"],
+        rules: {
+            "no-unused-vars": "off", 
         },
     },
 ];
