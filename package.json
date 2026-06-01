@@ -8,19 +8,23 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest run",
-    "test:e2e": "node ./scripts/e2e.test.js",
+    "test:e2e": "playwright test",
     "lint": "node ./scripts/eslint.js",
-    "build:storybook": "node ./scripts/storybook.js",
-    "type:check": "node ./scripts/typecheck.js"
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "test:storybook": "storybook test --run",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@types/react": "^19.2.14",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^9.23.0",
@@ -28,6 +32,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^15.15.0",
     "jsdom": "^29.1.1",
+    "typescript": "^5.9.3",
     "vite": "^8.0.12",
     "vitest": "^4.1.8"
   }
