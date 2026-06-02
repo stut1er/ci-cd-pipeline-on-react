@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-export default function Counter({ initialCount = 0 }) {
+interface CounterProps {
+  initialCount?: number;
+}
+
+export default function Counter({ initialCount = 0 }: CounterProps) {
   const [count, setCount] = useState(initialCount);
 
   return (
