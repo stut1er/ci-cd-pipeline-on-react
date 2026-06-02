@@ -6,36 +6,102 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  NODE_VERSION: '20'
+
 jobs:
-  test:
-    timeout-minutes: 60
+  prepare-deps:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
-    
+    outputs:
+      cache-key: ${{ steps.cache-save.outputs.cache-id }}
     steps:
       - uses: actions/checkout@v4
-      
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-      
+      - name: Cache node_modules
+        id: cache-save
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+
+  quality-checks:
+    needs: prepare-deps
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: true
       - name: Type check
         run: npm run typecheck
-      
       - name: Lint
         run: npm run lint
-      
+
+  unit-tests:
+    needs: prepare-deps
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: true
       - name: Unit tests
         run: npm run test:unit
-      
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      
-      - name: E2E tests
-        run: npm run test:e2e
-      
+
+  storybook-tests:
+    needs: prepare-deps
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: true
       - name: Storybook tests
         run: npm run test:storybook:auto
+
+  e2e-tests:
+    needs: prepare-deps
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Restore cached node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          fail-on-cache-miss: true
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: E2E tests
+        run: npm run test:e2e
