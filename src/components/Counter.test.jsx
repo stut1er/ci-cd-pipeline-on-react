@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Counter from './Counter';
 
@@ -8,21 +7,44 @@ describe('Counter Component', () => {
     expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 0');
   });
 
-  it('увеличивает счётчик при клике на кнопку "+1"', () => {
+  it('отображает начальное значение из props', () => {
     render(<Counter initialCount={10} />);
+    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 10');
+  });
+
+  it('увеличивает счётчик при клике +1', () => {
+    render(<Counter initialCount={5} />);
     fireEvent.click(screen.getByTestId('increment-btn'));
-    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 11');
+    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 6');
+  });
+
+  it('уменьшает счётчик при клике -1', () => {
+    render(<Counter initialCount={5} />);
+    fireEvent.click(screen.getByTestId('decrement-btn'));
+    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 4');
   });
 
   it('сбрасывает счётчик до начального значения', () => {
     render(<Counter initialCount={3} />);
-    fireEvent.click(screen.getByTestId('increment-btn')); // стало 4
+    fireEvent.click(screen.getByTestId('increment-btn'));
+    fireEvent.click(screen.getByTestId('increment-btn'));
+    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 5');
     fireEvent.click(screen.getByTestId('reset-btn'));
     expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 3');
   });
 
-  it('показывает "Чётное число" для чётного значения', () => {
-    render(<Counter initialCount={2} />);
-    expect(screen.getByTestId('parity-message')).toHaveTextContent('Чётное число');
+  it('не превышает максимальное значение', () => {
+    render(<Counter initialCount={5} max={7} />);
+    fireEvent.click(screen.getByTestId('increment-btn'));
+    fireEvent.click(screen.getByTestId('increment-btn'));
+    fireEvent.click(screen.getByTestId('increment-btn'));
+    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 7');
+  });
+
+  it('не опускается ниже минимального значения', () => {
+    render(<Counter initialCount={3} min={1} />);
+    fireEvent.click(screen.getByTestId('decrement-btn'));
+    fireEvent.click(screen.getByTestId('decrement-btn'));
+    expect(screen.getByTestId('count-value')).toHaveTextContent('Счётчик: 1');
   });
 });

@@ -1,8 +1,9 @@
 import Counter from './Counter';
 
 export default {
-  title: 'Example/Counter',
+  title: 'Components/Counter',
   component: Counter,
+  tags: ['autodocs'],
 };
 
 export const Default = {
@@ -11,8 +12,10 @@ export const Default = {
   },
 };
 
-export const WithInitialValue = {
+export const WithLimits = {
   args: {
-    initialCount: 10,
+    initialCount: 5,
+    min: 0,
+    max: 10,
   },
 };
