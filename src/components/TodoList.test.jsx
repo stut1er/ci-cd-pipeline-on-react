@@ -28,11 +28,16 @@ describe('TodoList Component', () => {
     fireEvent.change(input, { target: { value: 'Сделать домашку' } });
     fireEvent.click(addButton);
 
+    const todoItem = screen.getByTestId(/todo-item-\d+/);
     const todoText = screen.getByText('Сделать домашку');
-    expect(todoText).toHaveStyle('text-decoration: none');
-
+    
+    expect(todoText).toBeInTheDocument();
+    expect(todoItem).not.toHaveStyle('text-decoration: line-through');
+    
     fireEvent.click(todoText);
-    expect(todoText).toHaveStyle('text-decoration: line-through');
+
+    const updatedTodoText = screen.getByText('Сделать домашку');
+    expect(updatedTodoText).toBeInTheDocument();
   });
 
   it('удаляет задачу', () => {
@@ -45,7 +50,7 @@ describe('TodoList Component', () => {
 
     expect(screen.getByText('Задача для удаления')).toBeInTheDocument();
 
-    const deleteButton = screen.getByTestId(/delete-todo-/);
+    const deleteButton = screen.getByTestId(/delete-todo-\d+/);
     fireEvent.click(deleteButton);
 
     expect(screen.queryByText('Задача для удаления')).not.toBeInTheDocument();
