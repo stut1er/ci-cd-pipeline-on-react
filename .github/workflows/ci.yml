@@ -83,6 +83,8 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
           fail-on-cache-miss: true
+      - name: Install Playwright Browsers for Storybook
+        run: npx playwright install --with-deps chromium
       - name: Storybook tests
         run: npm run test:storybook:auto
 
